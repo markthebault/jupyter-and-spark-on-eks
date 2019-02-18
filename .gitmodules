@@ -1,0 +1,3 @@
+[submodule "spark-on-k8s"]
+	path = spark-on-k8s
+	url = https://github.com/SnappyDataInc/spark-on-k8s.git
