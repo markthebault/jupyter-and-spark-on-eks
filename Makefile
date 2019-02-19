@@ -1,7 +1,7 @@
 spark_dir=~/workspace/_libs/spark/
 repository_url=$(shell aws ecr describe-repositories --repository-names spark --query 'repositories[*].repositoryUri' --output text)
-kube_conf_file=./kubeconfig_my-cluster
-all:
+kube_conf_file=$(PWD)/kubeconfig_my-cluster
+all: init create-infra build-image push-image-to-ecr install-jupyter
 
 init:
 	terraform init
@@ -11,7 +11,7 @@ create-infra:
 
 build-image:
 	cd $(spark_dir) && \
-	sh ./bin/docker-image-tool.sh  -m -t spark-cluster build
+	sh ./bin/docker-image-tool.sh -t spark-cluster build
 
 run-proxy:
 	kubectl --kubeconfig=$(kube_conf_file) proxy --port=8080
@@ -32,12 +32,12 @@ push-image-to-ecr:
 	docker tag spark-py:spark-cluster $(repository_url):spark-cluster
 	docker push $(repository_url):spark-cluster
 
-install-helm:
-	kubectl --kubeconfig=$(kube_conf_file) apply -f service-account-conf.yml
-	helm init --service-account tiller
 
-install-jupyter-chart:
-	helm install --name datas ./spark-on-k8s/charts/jupyter-with-spark/ --set serviceAccount=jupyter
+install-jupyter:
+	kubectl --kubeconfig=$(kube_conf_file) apply -f jupyter.yaml
 
 jupyter-port-forward:
-	kubectl --kubeconfig=$(kube_conf_file) port-forward deployment/datas-jupyter-with-spark 8888:8888
+	kubectl --kubeconfig=$(kube_conf_file) port-forward deployment/jupyter 8888:8888
+
+get-pyspark-docker-image:
+	@echo $(repository_url):spark-cluster
