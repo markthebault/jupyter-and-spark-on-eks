@@ -262,3 +262,4 @@ spark.stop()
 
 # TODO
 - Create a terraform template that generates the jupyter.yaml with the correct ECR uri of jupyter
+- Pass the container image for spark in the env environment of the jupyter container #awesome
