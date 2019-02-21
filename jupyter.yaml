@@ -45,7 +45,7 @@ spec:
       serviceAccountName: jupyter-sa
       containers:
       - name: server
-        image: jupyter/pyspark-notebook
+        image: jupyter/pyspark-notebook:45b8529a6bfc
         # resources:
         #   requests:
         #     memory: "1Gi"

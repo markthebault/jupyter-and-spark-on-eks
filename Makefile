@@ -1,5 +1,6 @@
 spark_dir=~/workspace/_libs/spark/
 spark_repository_ecr=$(shell aws ecr describe-repositories --repository-names spark --query 'repositories[*].repositoryUri' --output text)
+jupyter_repository_ecr=$(shell aws ecr describe-repositories --repository-names jupyter --query 'repositories[*].repositoryUri' --output text)
 kube_conf_file=$(PWD)/kubeconfig_my-cluster
 
 all: init create-infra build-image push-image-to-ecr install-jupyter get-jupyter-token
@@ -22,6 +23,9 @@ push-image-to-ecr:
 	@$(shell aws ecr get-login --no-include-email)
 	docker tag spark-py:spark-cluster $(spark_repository_ecr):spark-cluster
 	docker push $(spark_repository_ecr):spark-cluster
+	docker pull jupyter/pyspark-notebook:45b8529a6bfc
+	docker tag jupyter/pyspark-notebook:45b8529a6bfc $(jupyter_repository_ecr):latest
+	docker push $(jupyter_repository_ecr):latest
 
 install-jupyter:
 	kubectl --kubeconfig=$(kube_conf_file) apply -f jupyter.yaml

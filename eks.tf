@@ -6,8 +6,9 @@ module "my-cluster" {
 
   worker_groups = [
     {
-      instance_type = "m4.large"
+      instance_type = "m5.large"
       asg_max_size  = 5
+      worker_group_count = "2"
     }
   ]
 
